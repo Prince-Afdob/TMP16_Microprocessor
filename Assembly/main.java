@@ -10,8 +10,8 @@ class main{
     public static int block_count = 0;
     public static boolean islable = false;
 
-    public static String opcode = "LDIB LDIW MOVR STAM STAR MOVM INCR DECR ADDR SUBR MULR DIVR SKIP LABL GOTO ENDL END";
-    public static String register = "Ax  Bx  Cx  Dx  R1  R2  R3  R4";
+    public static String opcode = "LDIB LDIW MOVR STAM STAR MOVM INCR DECR ADDR SUBR MULR DIVR SKIP LABL GOTO CMPR JMPE ENDL STOP";
+    public static String register = "Ax  Bx  Cx  Dx  R1  R2  R3  R4  OT";
     public static String banks = "B1  B2  B3  B4  B5  B6  B7  B8";
 
     public static String block_name[] = new String[max_function];
@@ -332,13 +332,39 @@ else if(opcode.indexOf(dat[0]) == 70){
     write(instruction);
 } 
 
-// ====================== ENDL =============================
-else if(opcode.indexOf(dat[0] == 75)){
-    
+// ====================== CMPR =============================
+else if(opcode.indexOf(dat[0]) == 75){
+    instruction += "0";
+    if(register.indexOf(dat[1]) != -1){
+        // System.out.print(Integer.toHexString(register.indexOf(dat[1])/4));
+        instruction += Integer.toHexString(register.indexOf(dat[1])/4);
+    }else{
+        System.out.println("Unknown Register! (Nothing Written.)");
+    }
+    instruction += "0e\n";
+
+    current_address += 1;
+    write(instruction);
 }
 
-// ==================== END ==========================
-        else if(opcode.indexOf(dat[0]) == 80){
+// ====================== JMPE ==============================
+else if(opcode.indexOf(dat[0]) == 80){
+    if(dat[1].contains("0x")){
+                instruction += dat[1].substring(2).toLowerCase();
+            }else{
+                instruction += String.format("%02x", Integer.parseInt(dat[1])).toLowerCase();
+            }
+    instruction += "0f\n";
+    current_address += 1;
+    write(instruction);
+}
+
+// ====================== ENDL ==============================
+else if(opcode.indexOf(dat[0]) == 85){
+    islable = false;
+}
+// ==================== STOP ==========================
+        else if(opcode.indexOf(dat[0]) == 90){
             ending = true;
             System.out.println("======== Ends Here ========");
             System.out.print(instruction);
